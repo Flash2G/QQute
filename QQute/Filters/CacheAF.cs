@@ -12,6 +12,13 @@ namespace QQute.Filters
 {
     public class CacheAF : ActionFilterAttribute
     {
+        private bool _allowCache;
+
+        public CacheAF(bool DoYouWantCache = false)
+        {
+            _allowCache = DoYouWantCache;
+        }
+
         public override Task OnActionExecutingAsync(HttpActionContext actionContext, CancellationToken cancellationToken)
         {
             return base.OnActionExecutingAsync(actionContext, cancellationToken);
@@ -19,18 +26,20 @@ namespace QQute.Filters
 
         public override Task OnActionExecutedAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {
-            actionExecutedContext.Response.Headers.CacheControl = new CacheControlHeaderValue
+            if (_allowCache)
             {
-                Private = true,
-                Public = false,
-                NoStore = false,
-                MaxAge = TimeSpan.FromSeconds(10)
-            };
+                actionExecutedContext.Response.Headers.CacheControl = new CacheControlHeaderValue
+                {
+                    Private = true,
+                    Public = false,
+                    NoStore = false,
+                    MaxAge = TimeSpan.FromSeconds(10)
+                };
 
-            //Pragma
-            actionExecutedContext.Request.Headers.Date = DateTime.UtcNow;
-            actionExecutedContext.Request.Content.Headers.Expires = DateTime.UtcNow.AddSeconds(10);
-
+                //Pragma
+                actionExecutedContext.Request.Headers.Date = DateTime.UtcNow;
+                actionExecutedContext.Request.Content.Headers.Expires = DateTime.UtcNow.AddSeconds(10);
+            }
             return base.OnActionExecutedAsync(actionExecutedContext, cancellationToken);
         }
     }
