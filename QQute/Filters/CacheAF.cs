@@ -74,7 +74,7 @@ namespace QQute.Filters
         {
             var timerOBJ = actionExecutedContext.Request.Properties[_property];
 
-            actionExecutedContext.Response.Headers.Add(_headerName, ((Stopwatch)timerOBJ).ElapsedMilliseconds.ToString() + _timerName);
+            actionExecutedContext.Response.Headers.Add(_headerName, ((Stopwatch)timerOBJ).ElapsedMilliseconds.ToString() + _timerName + "ms");
 
             return base.OnActionExecutedAsync(actionExecutedContext, cancellationToken);
         }
